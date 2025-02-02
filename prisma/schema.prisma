@@ -7,3 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+  senha       String?
+  telefone    String?
+  whatsapp    Boolean  @default(false)
+  telefone2   String?
+  whatsapp2   Boolean  @default(false)
+  cpf         String   @unique
+  datanasc    String
+  cep         String?
+  endereco    String?
+  cidade      String?
+  bairro      String?
+  estado      String?
+  numero      String?
+  complemento String?
+  pixkey      String?
+  voucher     Int?
+  avatar      String?
+  status      Boolean  @default(true)
+  custo       Json?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}

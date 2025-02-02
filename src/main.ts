@@ -1,8 +1,41 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import * as bodyParser from "body-parser"; // Importação corrigida
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
+  const Porta = process.env.NEST_PORT || 3000; // Adiciona um valor padrão para a porta
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  const config = new DocumentBuilder()
+    .setTitle("Sis Nato Api")
+    .setDescription("Api de integração com o Sis Nato")
+    .setVersion("1.0")
+    .addTag("Rotas")
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("doc", app, documentFactory);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Remove propriedades que não estão no DTO
+      forbidNonWhitelisted: true, // Lança erro se houver propriedades não definidas
+      transform: true // Converte automaticamente os tipos
+    })
+  );
+
+  // Aumenta o limite do payload para 50MB
+  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
+  await app.listen(Porta, () => {
+    console.log("");
+    console.log("");
+    console.log("");
+    console.log(`Nest running on http://localhost:${Porta}`);
+    console.log(`Swagger running on http://localhost:${Porta}/doc`);
+    console.log("");
+  });
 }
 bootstrap();
